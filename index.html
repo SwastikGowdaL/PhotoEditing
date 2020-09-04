@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"
+  />
+
+  <script src="http://hongru.github.io/proj/canvas2image/canvas2image.js"></script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo-Editor</title>
+
+<style>
+    #upload{
+        text-align: center;
+        background-color: aqua;
+        width: 100%;
+        border-radius: 5px;
+        padding: 2%;
+        font-weight:  bold;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: larger;
+    }
+    #input{
+        margin: 20px 0;
+    }
+#buttons{
+    margin-top: 10px;
+    background-color: cornflowerblue;
+    padding: 2%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+button{
+    padding: 10px;
+    margin:5px;
+    padding-right:5px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    padding-left:5px;
+    box-shadow: 1px 1px 10px cyan;
+    }
+  
+button:hover{
+    background-color: cyan;
+    border: 2px solid black;
+    box-shadow: 1px 1px 10px rgb(25, 88, 88);
+}
+
+
+</style>
+
+</head>
+<body>
+<div data-aos="fade-right" data-aos-duration="3000">
+<div id="upload">
+<label for="uploader">Select file:</label>
+<input class="animate__animated animate__heartBeat animate__delay-3s"  type="file" id="uploader">
+</div>
+</div>
+<div id="buttons"> 
+<button data-aos="flip-left" data-aos-duration="3000" >Greyscale</button>
+<button data-aos="flip-left" data-aos-duration="3000">Sepia</button>
+<button data-aos="flip-left" data-aos-duration="3000">Invert</button>
+<button data-aos="flip-left" data-aos-duration="3000">rbg</button>
+<button data-aos="flip-left" data-aos-duration="3000">bgr</button>
+<button data-aos="flip-left" data-aos-duration="3000">grb</button>
+<button data-aos="flip-left" data-aos-duration="3000">clear</button>
+</div>
+<br>
+<center>
+<div >
+    <canvas id="canvas"></canvas>
+</div>
+</center>
+
+<script >
+
+const canvas=document.getElementById('canvas');
+const cxt=canvas.getContext('2d');
+const img= new Image();
+const reader=new FileReader();
+const uploadImage=e=>{
+    reader.onload=()=>{
+        img.onload= () => {
+            canvas.width=img.width;
+            canvas.height=img.height;
+            cxt.drawImage(img,0,0)
+           
+        }
+        img.src=reader.result;
+    }
+    reader.readAsDataURL(e.target.files[0])
+}
+
+const imageLoader=document.getElementById('uploader');
+imageLoader.addEventListener('change',uploadImage);
+const greyscale=()=>{
+    document.body.style.background= "gray";
+    const imageData=cxt.getImageData(0,0,canvas.width,canvas.height);
+const data=imageData.data;
+
+for(let i=0;i<data.length;i+=4){
+    const grey=data[i]*0.21+data[i+1]*0.71+data[i+2]*0.07;
+    data[i]=grey;
+    data[i+1]=grey;
+    data[i+2]=grey;
+
+}
+cxt.putImageData(imageData,0,0);
+}
+const sepia=()=>{
+    document.body.style.background= "#D6B177";
+    const imageData=cxt.getImageData(0,0,canvas.width,canvas.height);
+const data=imageData.data;
+for(let i=0;i<data.length;i+=4){
+    const grey=data[i]*0.21+data[i+1]*0.71+data[i+2]*0.07;
+    data[i]=grey+95;
+    data[i+1]=grey+58;
+    data[i+2]=grey;
+  
+}
+cxt.putImageData(imageData,0,0);
+}
+
+const invert=()=>{
+    document.body.style.background= "black";
+    const imageData=cxt.getImageData(0,0,canvas.width,canvas.height);
+const data=imageData.data;
+for(let i=0;i<data.length;i+=4){
+ 
+    data[i]=255-data[i];
+    data[i+1]=255-data[i+1];
+    data[i+2]=255-data[i+2];
+}
+cxt.putImageData(imageData,0,0);
+}
+const rbg=()=>{
+
+    document.body.style.background= "#A95D99";
+
+    const imageData=cxt.getImageData(0,0,canvas.width,canvas.height);
+const data=imageData.data;
+for(let i=0;i<data.length;i+=4){
+  const green=data[i+1];
+    data[i]=data[i];
+    data[i+1]=data[i+2];
+    data[i+2]=green;
+}
+cxt.putImageData(imageData,0,0);
+}
+
+const bgr=()=>{
+    document.body.style.background= "#003977";
+    const imageData=cxt.getImageData(0,0,canvas.width,canvas.height);
+const data=imageData.data;
+for(let i=0;i<data.length;i+=4){
+ const red=data[i];
+    data[i]=data[i+2];
+    data[i+1]=data[i+1];
+    data[i+2]=red;
+}
+cxt.putImageData(imageData,0,0);
+}
+
+const grb=()=>{
+    document.body.style.background= "#7B8560";
+    const imageData=cxt.getImageData(0,0,canvas.width,canvas.height);
+const data=imageData.data;
+for(let i=0;i<data.length;i+=4){
+ const red1=data[i];
+    data[i]=data[i+1];
+    data[i+1]=red1;
+    data[i+2]=data[i+2];
+}
+cxt.putImageData(imageData,0,0);
+}
+
+const clearC = () =>{
+    document.body.style.background= "white";
+img.src=reader.result;
+}
+
+document.querySelectorAll('button')[0].addEventListener('click',greyscale);
+document.querySelectorAll('button')[1].addEventListener('click',sepia);
+document.querySelectorAll('button')[2].addEventListener('click',invert);
+document.querySelectorAll('button')[3].addEventListener('click',rbg);
+document.querySelectorAll('button')[4].addEventListener('click',bgr);
+document.querySelectorAll('button')[5].addEventListener('click',grb);
+document.querySelectorAll('button')[6].addEventListener('click',clearC);
+
+function to_image(){
+                var canvas = document.getElementById("thecanvas");
+                document.getElementById("theimage").src = canvas.toDataURL();
+                Canvas2Image.saveAsPNG(canvas);
+            }
+
+
+</script>
+
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+  </script>
+<center><div><button onclick="to_image()">Draw to Image</button></div></center>
+<image id="theimage"></image>
+
+</body>
+</html>
